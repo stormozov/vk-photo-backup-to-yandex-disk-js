@@ -24,7 +24,7 @@ class SearchBlock {
   addPhotoButtonHandler() {
     this.addButton.addEventListener('click', () => {
       const query = this.userInput.value.trim();
-      if (query) VK.get(query, new ImageViewer().drawImages);
+      if (query) VK.get(query, (images) => new ImageViewer().drawImages(images));
     });
   }
 }

@@ -16,14 +16,14 @@ class VK {
    * Получает изображения
    * */
   static get(id = '', callback) {
-    this.setLastCallback(callback.name);
+    this.setLastCallback(callback);
 
     const params = {
       owner_id: id,
       album_id: 'profile',
       access_token: this.ACCESS_TOKEN,
       v: this.API_VERSION,
-      callback: this.lastCallback
+      callback: 'VK.processData'
     };
 
     const queryString = new URLSearchParams(params).toString();
@@ -36,14 +36,13 @@ class VK {
    * Является обработчиком ответа от сервера.
    */
   static processData(result) {
-    if (result && result.response) {
-      const data = result;
-      console.log(data)
-    } else {
-      console.error(result.error);
-      alert(result.error.error_msg);
+    if (!ImageManager.isValidResponse(result)) {
+      console.error('Некорректная структура данных:', result);
+      return;
     }
 
+    const largestImages = ImageManager.getLargestImages(result.response.items);
+    this.lastCallback(largestImages);
     this.removeScript(this.lastRequestUrl);
     this.lastRequestUrl = null;
   }
@@ -53,7 +52,6 @@ class VK {
    */
   static setLastCallback(callback) {
     this.lastCallback = callback;
-    window[callback] = this.processData.bind(this);
   }
 
   /**

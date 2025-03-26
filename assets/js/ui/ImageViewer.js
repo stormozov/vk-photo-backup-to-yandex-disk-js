@@ -24,7 +24,9 @@ class ImageViewer {
   /**
    * Отрисовывает изображения.
   */
-  drawImages(images) {}
+  drawImages(images) {
+    console.log(images);
+  }
 
   /**
    * Контроллирует кнопки выделения всех изображений и отправки изображений на диск
