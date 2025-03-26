@@ -6,6 +6,8 @@
   <title>Резервное копирование</title>
   <link rel="stylesheet" type="text/css" href="semantic/semantic.min.css">
   <link rel="stylesheet" type="text/css" href="assets/css/styles.css">
+
+  <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
 </head>
 <body>
   <div class="ui container">
@@ -27,8 +29,8 @@
       <div class="row images-wrapper">
         <div class="column ten wide images-list">
           <div class="ui grid">
-            <div class="row">
-            </div>
+            <div class="row"></div>
+            
             <div class="row">
               <button class="ui disabled primary button select-all">Выбрать всё</button>
               <button class="ui primary button show-uploaded-files">Посмотреть загруженные файлы</button>
@@ -60,6 +62,63 @@
 
     <div class="scrolling content">
       <i class="asterisk loading icon massive"></i>
+    </div>
+  </div>
+
+  <div class="vk-auth-modal">
+    <div class="vk-auth-modal__inner-wrapper">
+      <img src="./assets/img/vk-id-logo.png" class="vk-id-logo" alt="">
+      <h2>Войдите в сервис или зарегистрируйтесь</h2>
+      <p>
+        Перед началом использования сервиса необходимо авторизоваться через соц. сеть ВКонтакте. После этого вам станут доступны все возможности сервиса. Ваши данные будут надёжно защищены технологиями VK ID. В целях безопасности ваша авторизация будет действовать в течении 1 часа.
+      </p>
+      <script type="text/javascript">
+        if ('VKIDSDK' in window) {
+          const VKID = window.VKIDSDK;
+
+          VKID.Config.init({
+            app: 53300830,
+            redirectUrl: 'http://localhost',
+            responseMode: VKID.ConfigResponseMode.Callback,
+            source: VKID.ConfigSource.LOWCODE,
+            scope: 'photos',
+          });
+
+          const oneTap = new VKID.OneTap();
+
+          oneTap.render({
+            container: document.currentScript.parentElement,
+            showAlternativeLogin: true,
+            oauthList: ['ok_ru', 'mail_ru']
+          })
+            .on(VKID.WidgetEvents.ERROR, vkidOnError)
+            .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, function (payload) {
+              const code = payload.code;
+              const deviceId = payload.device_id;
+
+              VKID.Auth.exchangeCode(code, deviceId)
+                .then(vkidOnSuccess)
+                .catch(vkidOnError);
+            });
+
+          function vkidOnSuccess(data) {
+            console.log(data);
+
+            setCookie('vkid_token', data.access_token, 3_600_000);
+          }
+
+          function vkidOnError(error) {
+            console.error(error);
+          }
+
+          function setCookie(name, value, expires) {
+            const date = new Date();
+            date.setTime(date.getTime() + expires);
+            const expiresDate = "; expires=" + date.toUTCString();
+            document.cookie = name + "=" + value + expiresDate + "; path=/";
+          }
+        }
+      </script>
     </div>
   </div>
 

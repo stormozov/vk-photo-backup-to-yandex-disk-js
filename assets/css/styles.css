@@ -23,7 +23,7 @@ body::after {
 }
 
 h1, h2, h3, h4, h5 {
-  font-family: 'Play','Helvetica Neue',Arial,Helvetica,sans-serif;
+  font-family: 'Play', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   color: #593565;
 }
 
@@ -56,7 +56,13 @@ h2 {
   font-family: 'Play', 'Helvetica Neue', Arial, sans-serif;
   font-size: 3rem;
   color: #FFD5FF;
-  text-shadow: 1px 0px 4px #ffd5ff, 2px 0px 4px #ffd5ff, 0px 0px 3px #d42cca, 4px 3px 0px #d42cca, 0px 1px, 0px 0px 10px, 0px 0px 10px;
+  text-shadow: 1px 0px 4px #ffd5ff, 
+               2px 0px 4px #ffd5ff, 
+               0px 0px 3px #d42cca, 
+               4px 3px 0px #d42cca, 
+               0px 1px, 
+               0px 0px 10px, 
+               0px 0px 10px;
   text-transform: uppercase;
   padding-right: 0.5rem;
   margin-bottom: 0;
@@ -159,4 +165,50 @@ i.icon.asterisk.loading {
 
 .uploaded-previewer-modal .image-preview-container .ui.labeled.icon.button > .icon {
   background: none;
+}
+
+/* Всплывающее окно авторизации */
+
+.vk-auth-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+
+  background-color: #ffffff;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vk-auth-modal.hidden {
+  display: none;
+}
+
+.vk-auth-modal__description {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  padding: 1em;
+
+  font-size: 1.2rem;
+  color: #b5b4b6;
+  text-align: center;
+}
+
+.vk-auth-modal__inner-wrapper {
+  max-width: 400px;
+  margin: 0 auto;
+
+  text-align: center;
+}
+
+.vk-id-logo {
+  width: 120px;
+  height: 120px;
 }
