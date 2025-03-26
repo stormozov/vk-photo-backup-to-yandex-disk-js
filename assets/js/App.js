@@ -44,29 +44,11 @@ class App {
     if (!modal) return;
 
     const updateModalVisibility = () => {
-      const hasToken = this.getCookie('vkid_token');
+      const hasToken = StorageManager.getCookie('vkid_token');
       modal.classList.toggle('hidden', !!hasToken);
     };
 
     updateModalVisibility();
     setInterval(updateModalVisibility, 1000);
-  }
-
-  /**
-   * Возвращает значение куки по ее названию.
-   * @param {string} name Название куки
-   * @returns {string|null} Значение куки или null, если куки не существует
-   */
-  static getCookie(name) {
-    const nameEQ = name + "=";
-    const ca = document.cookie.split(';');
-
-    for (let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-    }
-
-    return null;
   }
 }

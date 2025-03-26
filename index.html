@@ -70,7 +70,7 @@
       <img src="./assets/img/vk-id-logo.png" class="vk-id-logo" alt="">
       <h2>Войдите в сервис или зарегистрируйтесь</h2>
       <p>
-        Перед началом использования сервиса необходимо авторизоваться через соц. сеть ВКонтакте. После этого вам станут доступны все возможности сервиса. Ваши данные будут надёжно защищены технологиями VK ID. В целях безопасности ваша авторизация будет действовать в течении 1 часа.
+        Перед началом использования сервиса необходимо авторизоваться через соц. сеть ВКонтакте. После этого вам станут доступны все возможности сервиса. Ваши данные будут надёжно защищены технологиями VK ID. В целях безопасности ваша авторизация будет действовать в течении 24 часов.
       </p>
       <script type="text/javascript">
         if ('VKIDSDK' in window) {
@@ -104,7 +104,7 @@
           function vkidOnSuccess(data) {
             console.log(data);
 
-            setCookie('vkid_token', data.access_token, 3_600_000);
+            setCookie('vkid_token', data.access_token, 86_400_000);
           }
 
           function vkidOnError(error) {
@@ -128,6 +128,8 @@
     crossorigin="anonymous">
   </script>
   <script src="semantic/semantic.min.js"></script>
+
+  <script src="assets/js/utils/StorageManager.js"></script>
   <script src="assets/js/api/createRequest.js"></script>
   <script src="assets/js/api/VK.js"></script>
   <script src="assets/js/api/Yandex.js"></script>
