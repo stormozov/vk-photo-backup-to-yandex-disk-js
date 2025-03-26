@@ -65,7 +65,7 @@
     </div>
   </div>
 
-  <div class="vk-auth-modal">
+  <div class="vk-auth-modal hidden">
     <div class="vk-auth-modal__inner-wrapper">
       <img src="./assets/img/vk-id-logo.png" class="vk-id-logo" alt="">
       <h2>Войдите в сервис или зарегистрируйтесь</h2>
@@ -81,7 +81,7 @@
             redirectUrl: 'http://localhost',
             responseMode: VKID.ConfigResponseMode.Callback,
             source: VKID.ConfigSource.LOWCODE,
-            scope: 'photos',
+            scope: 'photos offline',
           });
 
           const oneTap = new VKID.OneTap();
