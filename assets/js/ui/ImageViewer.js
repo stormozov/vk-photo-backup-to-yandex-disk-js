@@ -3,7 +3,15 @@
  * Используется для взаимодействием блоком изображений
  * */
 class ImageViewer {
-  constructor(element) {}
+
+  /**
+   * @param {HTMLElement} imgViewerWrapper - DOM-элемент, в котором находится блок изображений
+   */
+  constructor(imgViewerWrapper) {
+    this.imgListOutput = imgViewerWrapper.querySelector('.images-list .row');
+    this.imgPreview = imgViewerWrapper.querySelector('.images-prev img');
+    this.buttonSelectAll = imgViewerWrapper.querySelector('.select-all');
+  }
 
   /**
    * Добавляет следующие обработчики событий:
@@ -26,6 +34,21 @@ class ImageViewer {
   */
   drawImages(images) {
     console.log(images);
+    if (images.length !== 0) {
+      this.buttonSelectAll.classList.remove('disabled');
+      images.forEach(image => {
+        const imgWrapper = document.createElement('div');
+        const img = document.createElement('img');
+
+        imgWrapper.classList.add('four', 'wide', 'column', 'ui', 'medium', 'image-wrapper');
+        img.src = image.url;
+
+        imgWrapper.appendChild(img);
+        this.imgListOutput.appendChild(imgWrapper);
+      });
+    } else {
+      this.buttonSelectAll.classList.add('disabled');
+    }
   }
 
   /**
