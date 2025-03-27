@@ -34,7 +34,15 @@ class SearchBlock {
   addPhotoButtonHandler() {
     this.addButton.addEventListener('click', () => {
       const query = this.userInput.value.trim();
-      if (query) VK.get(query, (images) => this.imageViewer.drawImages(images));
+      if (query) {
+        if (/^\d+$/.test(query)) {
+          const userId = parseInt(query, 10);
+          VK.get(userId, (images) => this.imageViewer.drawImages(images));
+        } else {
+          this.userInput.value = '';
+          alert('Идентификатор должен быть целым числом (например: 123456).');
+        }
+      }
     });
   }
 }
