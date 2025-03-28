@@ -34,6 +34,7 @@ class ImageViewer {
 
     // События на кнопках управления
     this.selectAllHandler();
+    this.openSendModal();
   }
 
   /**
@@ -78,13 +79,30 @@ class ImageViewer {
   }
 
   /**
+   * Открывает всплывающее окно для загрузки изображений
+   */
+  openSendModal() {
+    this.buttonSend.addEventListener('click', () => {
+      const modal = App.getModal('fileUploader');
+
+      const images = this.imgListOutput.querySelectorAll('img');
+      const selectedImages = [...images].filter((img) => img.classList.contains('selected'));
+
+      modal.open();
+      modal.showImages(selectedImages);
+    });
+  }
+
+  /**
    * Очищает отрисованные изображения
    */
-  clear() {}
+  clear() {
+    this.imgListOutput.innerHTML = '';
+  }
 
   /**
    * Отрисовывает изображения.
-  */
+   */
   drawImages(images) {
     console.log(images);
     if (images.length !== 0) {

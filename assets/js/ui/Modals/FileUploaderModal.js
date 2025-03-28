@@ -1,38 +1,155 @@
 /**
- * Класс FileUploaderModal
- * Используется как всплывающее окно для загрузки изображений
+ * Класс, отвечающий за модальное окно загрузки изображений.
+ * @extends BaseModal - Наследуется от класса BaseModal
  */
-class FileUploaderModal {
-  constructor(element) {}
+class FileUploaderModal extends BaseModal {
 
   /**
-   * Добавляет следующие обработчики событий:
-   * 1. Клик по крестику на всплывающем окне, закрывает его
-   * 2. Клик по кнопке "Закрыть" на всплывающем окне, закрывает его
-   * 3. Клик по кнопке "Отправить все файлы" на всплывающем окне, вызывает метод sendAllImages
-   * 4. Клик по кнопке загрузке по контроллерам изображения: 
-   * убирает ошибку, если клик был по полю вода
-   * отправляет одно изображение, если клик был по кнопке отправки
+   * @param {HTMLElement} contentOutput - Элемент, в котором выводится содержимое 
+   * модального окна
    */
-  registerEvents() {}
+  constructor(contentOutput) {
+    super(contentOutput);
+
+    // Получаем DOM-элементы
+    this.content = this.domElement.querySelector('.content');
+    this.closeElements = [
+      this.domElement.querySelector('.x.icon'),
+      this.domElement.querySelector('.close.button'),
+    ]
+    this.sendAllButton = this.domElement.querySelector('.send-all.button');
+
+    // Подписываемся на события
+    this.registerEvents();
+  }
 
   /**
-   * Отображает все полученные изображения в теле всплывающего окна
+   * Регистрирует обработчики событий
    */
-  showImages(images) {}
+  registerEvents() {
+    this.closeHandler();
+    this.sendAllHandler();
+    this.delegateEventsHandler();
+  }
 
   /**
-   * Формирует HTML разметку с изображением, полем ввода для имени файла и кнопкной загрузки
+   * Обработчик закрытия модального окна
    */
-  getImageHTML(item) {}
+  closeHandler() {
+    this.closeElements.forEach((element) => {
+      element.addEventListener('click', () => this.close());
+    });
+  }
 
   /**
-   * Отправляет все изображения в облако
+   * Обработчик отправки всех изображений
    */
-  sendAllImages() {}
+  sendAllHandler() {
+    this.sendAllButton.addEventListener('click', () => this.sendAllImages());
+  }
 
   /**
-   * Валидирует изображение и отправляет его на сервер
+   * Обработчик делегирования событий
    */
-  sendImage(imageContainer) {}
+  delegateEventsHandler() {
+    this.content.addEventListener('click', (e) => {
+      const target = e.target;
+
+      // Обработка поля ввода
+      if (target.closest('.input')) {
+        target.closest('.input').classList.remove('error');
+      }
+
+      // Обработка кнопки отправки
+      if (target.closest('.upload-button')) {
+        const container = target.closest('.image-preview-container');
+        this.sendImage(container);
+      }
+    });
+  }
+
+  /**
+   * Отображает изображения в модальном окне
+   * @param {Array} images - Массив объектов изображений
+   */
+  showImages(images) {
+    this.content.innerHTML = images
+      .reverse()
+      .map((image) => this.getImageHTML(image))
+      .join('');
+  }
+
+  /**
+   * Возвращает HTML-код для отображения изображения
+   * @param {Object} img - Объект изображения
+   * @returns {string} HTML-код
+   */
+  getImageHTML(img) {
+    return `
+      <div class="image-preview-container">
+        <img src="${img.currentSrc}">
+        <div class="ui action input">
+          <input type="text" placeholder="Путь к файлу">
+          <button class="ui button upload-button">
+            <i class="upload icon"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Отправляет все изображения на Яндекс.Диск
+   */
+  sendAllImages() {
+    const containers = this.content.querySelectorAll('.image-preview-container');
+    containers.forEach((container) => this.sendImage(container));
+  }
+
+  /**
+   * Отправляет изображение на Яндекс.Диск
+   * @param {HTMLElement} container - Контейнер изображения
+   */
+  sendImage(container) {
+    const input = container.querySelector('input');
+    const inputBlock = container.querySelector('.input');
+    const path = input.value.trim();
+
+    // Проверка пути к файлу на Яндекс.Диске
+    if (!path) {
+      inputBlock.classList.add('error');
+      return;
+    }
+
+    // Блокировка поля
+    inputBlock.classList.add('disabled');
+
+    // Получение данных изображения
+    const imageUrl = container.querySelector('img').src;
+
+    // Отправка на Яндекс.Диск
+    Yandex.uploadFile(path, imageUrl, (err, response) => {
+      if (err) {
+        console.error('Ошибка во время отправки фотографий на Яндекс.Диск из модального окна:', err);
+        inputBlock.classList.remove('disabled');
+      } else {
+        console.log(
+          new Date().toLocaleString(), 
+          '\nФотографии успешно отправлены на Яндекс.Диск из модального окна:\n', 
+          response
+        );
+        setTimeout(() => {
+          container.remove()
+
+          // Проверка оставшихся изображений
+          if (!this.content.querySelector('.image-preview-container')) {
+            this.close();
+            setTimeout(() => {
+              alert('Все изображения успешно отправлены на Яндекс.Диск.');
+            }, 100)
+          }
+        }, 1000);
+      }
+    });
+  }
 }

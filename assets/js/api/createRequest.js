@@ -1,6 +1,6 @@
 /**
  * Основная функция для совершения запросов по Yandex API.
- * */
+ */
 const createRequest = (options = {}) => {
   const {
     method = 'GET',
@@ -14,11 +14,9 @@ const createRequest = (options = {}) => {
   const xhr = new XMLHttpRequest();
 
   // Формируем URL с параметрами, если метод GET и есть данные
-  let requestUrl = url;
-  if (method === 'GET' && Object.keys(data).length > 0) {
-    const params = new URLSearchParams(data).toString();
-    requestUrl = `${url}?${params}`;
-  }
+  let requestUrl = Object.keys(data).length > 0
+    ? `${url}?${new URLSearchParams(data).toString()}`
+    : url;
 
   // Настраиваем запрос
   xhr.open(method, requestUrl);
@@ -36,7 +34,15 @@ const createRequest = (options = {}) => {
     if (xhr.status >= 200 && xhr.status < 300) {
       callback(null, xhr.response);
     } else {
-      callback(new Error(`Request failed with status ${xhr.status}`), null);
+      callback(
+        new Error(
+          `\n— Запрос завершился с ошибкой ${xhr.status}.\n` 
+          + `— Текст ошибки: ${xhr.response.message}.\n` 
+          + `— Описание: ${xhr.response.description}.\n` 
+          + `— Ошибка: ${xhr.response.error}.`
+        ), 
+        null
+      );
     }
   };
 
@@ -45,11 +51,7 @@ const createRequest = (options = {}) => {
 
   // Отправка запроса
   try {
-    if (method === 'GET') {
-      xhr.send();
-    } else {
-      xhr.send(JSON.stringify(data));
-    }
+    xhr.send();
   } catch (err) {
     callback(err, null);
   }
