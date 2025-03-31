@@ -142,6 +142,14 @@ i.icon.asterisk.loading {
   display: flex;
   flex-direction: row;
   margin-bottom: 30px;
+
+  transition: all 0.3s ease-in-out;
+}
+
+.uploaded-previewer-modal .image-preview-container.deleted {
+  opacity: 0;
+  transform: translateY(100vh) rotate(45deg);
+  transition: all 0.6s cubic-bezier(0.87, 0, 0.13, 1);
 }
 
 .uploaded-previewer-modal .image-preview-container img {
@@ -160,7 +168,8 @@ i.icon.asterisk.loading {
 .uploaded-previewer-modal .image-preview-container .buttons-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
+  gap: 12px;
 }
 
 .uploaded-previewer-modal .image-preview-container .ui.labeled.icon.button > .icon {

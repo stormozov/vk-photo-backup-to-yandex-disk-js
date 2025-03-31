@@ -13,10 +13,11 @@ const createRequest = (options = {}) => {
   // Создаем объект XMLHttpRequest
   const xhr = new XMLHttpRequest();
 
-  // Формируем URL с параметрами, если метод GET и есть данные
-  let requestUrl = Object.keys(data).length > 0
-    ? `${url}?${new URLSearchParams(data).toString()}`
-    : url;
+  let requestUrl = url;
+  if (Object.keys(data).length > 0) {
+    if (data.path && method === 'POST') data.path = `backup_vk_${data.path}.jpg`;
+    requestUrl += `?${new URLSearchParams(data).toString()}`;
+  }
 
   // Настраиваем запрос
   xhr.open(method, requestUrl);

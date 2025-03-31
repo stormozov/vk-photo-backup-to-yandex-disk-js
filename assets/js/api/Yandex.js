@@ -83,9 +83,13 @@ class Yandex {
   static getUploadedFiles(callback) {
     createRequest({
       method: 'GET',
-      url: `${this.HOST}/resources/files`,
+      url: `${this.HOST}/resources/last-uploaded`,
       headers: {
         'Authorization': `OAuth ${this.getToken()}`,
+      },
+      data: {
+        limit: 100,
+        'media_type': 'image',        
       },
       callback: callback,
     });

@@ -13,6 +13,7 @@ class ImageViewer {
     this.imgPreview = imgViewerWrapper.querySelector('.images-prev img');
     this.buttonSelectAll = imgViewerWrapper.querySelector('button.select-all');
     this.buttonSend = imgViewerWrapper.querySelector('button.send');
+    this.buttonPreview = imgViewerWrapper.querySelector('button.show-uploaded-files');
 
     // Подписываемся на события
     this.registerEvents();
@@ -35,6 +36,7 @@ class ImageViewer {
     // События на кнопках управления
     this.selectAllHandler();
     this.openSendModal();
+    this.openPreviewModal();
   }
 
   /**
@@ -90,6 +92,49 @@ class ImageViewer {
 
       modal.open();
       modal.showImages(selectedImages);
+    });
+  }
+
+  /**
+   * Открывает всплывающее окно просмотра загруженных файлов
+   */
+  async openPreviewModal() {
+    this.buttonPreview.addEventListener('click', async () => {
+      const modal = App.getModal('filePreviewer');
+
+      try {
+        const uploadedImages = await this.getUploadedFilesAsync();
+        
+        console.log(
+          new Date().toLocaleString(), 
+          '\nТип операции: GET',
+          '\nЗагрузка фото из Яндекс.Диска завершена успешно.'
+        );
+
+        modal.open();
+        modal.showImages(uploadedImages);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  }
+
+  /**
+   * Получает список загруженных файлов из Яндекс.Диска
+   * @returns {Promise} Список загруженных файлов
+   */
+  getUploadedFilesAsync() {
+    return new Promise((resolve, reject) => {
+      Yandex.getUploadedFiles((error, response) => {
+        if (error) {
+          reject(error);
+        } else {
+          const filteredImages = response.items.filter((item) => {
+            return item.media_type === 'image' && item.name.includes('backup_vk_');
+          });
+          resolve(filteredImages);
+        }
+      });
     });
   }
 
