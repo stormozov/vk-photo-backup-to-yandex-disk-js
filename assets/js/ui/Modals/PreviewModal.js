@@ -4,6 +4,9 @@
  */
 class PreviewModal extends BaseModal {
 
+  /**
+   * @param {HTMLElement} element - Блок, в котором находится модальное окно
+   */
   constructor(element) {
     super(element);
 
@@ -51,6 +54,10 @@ class PreviewModal extends BaseModal {
       if (e.target.classList.contains('delete')) {
         this.deleteSelectedImageHandler(e);
       }
+
+      if (e.target.classList.contains('download')) {
+        this.downloadSelectedImageHandler(e);
+      }
     });
   }
 
@@ -87,6 +94,17 @@ class PreviewModal extends BaseModal {
         }, 500);
       }
     });
+  }
+
+  /**
+   * Обработчик скачивания выбранного изображения
+   * @param {Event} e - Объект события клика
+   */
+  downloadSelectedImageHandler(e) {
+    const container = e.target.closest('.image-preview-container');
+    const downloadLink = container.querySelector('.ui.button.download').dataset.file;
+
+    Yandex.downloadFileByUrl(downloadLink);
   }
 
   /**
