@@ -1,12 +1,11 @@
 /**
  * Класс Yandex
  * Используется для управления облаком.
- * Имеет свойство HOST
  * */
 class Yandex {
 
-  // Базовый URL для API Яндекс.Диска.
-  static HOST = 'https://cloud-api.yandex.net/v1/disk';
+  static #HOST = 'https://cloud-api.yandex.net/v1/disk';
+  static #LS_KEY = 'yandexToken';
 
   /**
    * Метод формирования и сохранения токена для Yandex API.
@@ -16,13 +15,13 @@ class Yandex {
    * 
    * @returns {string} Токен для доступа к API Яндекс.Диска.
    */
-  static getToken() {
-    let token = localStorage.getItem('yandexToken');
+  static #getToken() {
+    let token = StorageManager.getLocal(this.#LS_KEY);
     
     if (!token) {
       token = prompt('Введите ваш OAuth токен для Яндекс.Диска:');
       token 
-        ? localStorage.setItem('yandexToken', token) 
+        ? StorageManager.setLocal(this.#LS_KEY, token)
         : alert('Токен не был введен.');
     }
 
@@ -40,9 +39,9 @@ class Yandex {
   static uploadFile(path, url, callback) {
     createRequest({
       method: 'POST',
-      url: `${this.HOST}/resources/upload`,
+      url: `${this.#HOST}/resources/upload`,
       headers: {
-        'Authorization': `OAuth ${this.getToken()}`,
+        'Authorization': `OAuth ${this.#getToken()}`,
       },
       data: {
         path: path,
@@ -62,9 +61,9 @@ class Yandex {
   static removeFile(path, callback) {
     createRequest({
       method: 'DELETE',
-      url: `${this.HOST}/resources`,
+      url: `${this.#HOST}/resources`,
       headers: {
-        'Authorization': `OAuth ${this.getToken()}`,
+        'Authorization': `OAuth ${this.#getToken()}`,
       },
       data: {
         path: path,
@@ -83,9 +82,9 @@ class Yandex {
   static getUploadedFiles(callback) {
     createRequest({
       method: 'GET',
-      url: `${this.HOST}/resources/last-uploaded`,
+      url: `${this.#HOST}/resources/last-uploaded`,
       headers: {
-        'Authorization': `OAuth ${this.getToken()}`,
+        'Authorization': `OAuth ${this.#getToken()}`,
       },
       data: {
         limit: 100,

@@ -2,6 +2,8 @@
  * Основная функция для совершения запросов по Yandex API.
  */
 const createRequest = (options = {}) => {
+  const ALLOWED_METHODS = ['GET', 'POST', 'DELETE'];
+
   const {
     method = 'GET',
     url,
@@ -10,7 +12,13 @@ const createRequest = (options = {}) => {
     callback
   } = options;
 
-  // Создаем объект XMLHttpRequest
+  if (ALLOWED_METHODS.indexOf(method.toUpperCase()) === -1) {
+    throw new Error(`Используется неправильный метод для запроса к API Яндекс.Диска.
+      Допустимые методы: ${ALLOWED_METHODS}.
+      Метод, который вы пытаетесь использовать: ${method}.`
+    );
+  }
+
   const xhr = new XMLHttpRequest();
 
   let requestUrl = url;
@@ -19,18 +27,14 @@ const createRequest = (options = {}) => {
     requestUrl += `?${new URLSearchParams(data).toString()}`;
   }
 
-  // Настраиваем запрос
   xhr.open(method, requestUrl);
 
-  // Устанавливаем заголовки
   for (const [key, value] of Object.entries(headers)) {
     xhr.setRequestHeader(key, value);
   }
 
-  // Устанавливаем тип ответа
   xhr.responseType = 'json';
 
-  // Обработка успешного ответа
   xhr.onload = () => {
     if (xhr.status >= 200 && xhr.status < 300) {
       callback(null, xhr.response);
@@ -47,10 +51,8 @@ const createRequest = (options = {}) => {
     }
   };
 
-  // Обработка ошибок сети
   xhr.onerror = () => callback(new Error('Network error'), null);
 
-  // Отправка запроса
   try {
     xhr.send();
   } catch (err) {
