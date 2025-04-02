@@ -23,6 +23,7 @@ class App {
     this.modals = {
       fileUploader: new FileUploaderModal($('.ui.modal.file-uploader-modal').modal({closable: false})),
       filePreviewer: new PreviewModal($('.ui.modal.uploaded-previewer-modal').modal({closable: false})),
+      vkAuth: new VKAuthModal('.vk-auth-modal', '.vk-auth-modal__buttons'),
     }
   }
 
@@ -40,15 +41,7 @@ class App {
    * Инициализирует всплывающее окно авторизации
    */
   static initVKAuth() {
-    const modal = document.querySelector('.vk-auth-modal');
-    if (!modal) return;
-
-    const updateModalVisibility = () => {
-      const hasToken = StorageManager.getCookie('vkid_token');
-      modal.classList.toggle('hidden', !!hasToken);
-    };
-
-    updateModalVisibility();
-    setInterval(updateModalVisibility, 1000);
+    const modal = this.getModal('vkAuth');
+    modal.init();
   }
 }
