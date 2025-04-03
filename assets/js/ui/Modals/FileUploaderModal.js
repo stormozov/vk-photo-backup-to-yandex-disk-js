@@ -17,6 +17,7 @@ class FileUploaderModal extends BaseModal {
       this.domElement.querySelector('.x.icon'),
       this.domElement.querySelector('.close.button'),
     ]
+    this.useDatesButton = this.domElement.querySelector('.use-dates.button');
     this.sendAllButton = this.domElement.querySelector('.send-all.button');
 
     // Подписываемся на события
@@ -29,6 +30,7 @@ class FileUploaderModal extends BaseModal {
   registerEvents() {
     this.closeHandler();
     this.sendAllHandler();
+    this.#initializeDateHandler();
     this.delegateEventsHandler();
   }
 
@@ -46,6 +48,44 @@ class FileUploaderModal extends BaseModal {
    */
   sendAllHandler() {
     this.sendAllButton.addEventListener('click', () => this.sendAllImages());
+  }
+
+  /**
+   * Инициализация обработчика кнопки "Исп. даты для названий".
+   * При нажатии заполняет все поля ввода названий файлов датой в формате "YYYY-MM-DD_HH-MM_N".
+   */
+  #initializeDateHandler() {
+    this.useDatesButton.addEventListener('click', () => this.#applyDatesToInputs());
+  }
+
+  /**
+   * Заполняет все поля ввода названий файлов датой в формате "YYYY-MM-DD_HH-MM_N".
+   */
+  #applyDatesToInputs() {
+    const previewContainers = this.content.querySelectorAll('.image-preview-container');
+    let counter = 1;
+
+    previewContainers.forEach((container) => {
+      const dateTimeString = this.#getFormattedDateTime();
+      const paddedCounter = String(counter++).padStart(4, '0');
+      container.querySelector('input').value = `${dateTimeString}_${paddedCounter}`;
+    });
+  }
+
+  /**
+   * Получает текущую дату и время в формате "YYYY-MM-DD_HH-MM".
+   * @returns {string} Дата и время в формате "YYYY-MM-DD_HH-MM".
+   */
+  #getFormattedDateTime() {
+    const date = new Date();
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}_${hour}-${minute}`;
   }
 
   /**
