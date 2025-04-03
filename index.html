@@ -7,7 +7,7 @@
   <link rel="stylesheet" type="text/css" href="semantic/semantic.min.css">
   <link rel="stylesheet" type="text/css" href="assets/css/styles.css">
 
-  <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
+  <script src="https://unpkg.com/@vkid/sdk@<2.5.2/dist-sdk/umd/index.js"></script>
 </head>
 <body>
   <div class="ui container">
@@ -78,6 +78,15 @@
     </div>
   </div>
 
+  <div id="cookieNotice" class="cookie-notice">
+    <div class="cookie-notice__container">
+      <p class="cookie-notice__text">
+        Сайт использует необходимые файлы cookie для работы с внешними сервисами (VK ID). Они позволяют вам авторизоваться и использовать сервис.
+      </p>
+      <button id="confirmCookies" class="cookie-notice__confirm-btn">Хорошо</button>
+    </div>
+  </div>
+
   <script
     src="https://code.jquery.com/jquery-3.1.1.min.js"
     integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
@@ -87,6 +96,8 @@
 
   <script src="assets/js/utils/StorageManager.js"></script>
   <script src="assets/js/utils/ImageManager.js"></script>
+
+  <script src="assets/js/cookies/cookie-notice.js"></script>
 
   <script src="assets/js/api/createRequest.js"></script>
   <script src="assets/js/api/VK.js"></script>

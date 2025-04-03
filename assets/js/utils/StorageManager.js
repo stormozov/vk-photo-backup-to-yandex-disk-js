@@ -55,4 +55,12 @@ class StorageManager {
   static getLocal(key) {
     return localStorage.getItem(key);
   }
+
+  /**
+   * Удаляет значение из localStorage по ключу.
+   * @param {string} key Ключ, по которому храниться значение
+   */
+  static removeLocal(key) {
+    localStorage.removeItem(key);
+  }
 }

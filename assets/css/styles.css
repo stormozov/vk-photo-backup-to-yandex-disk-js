@@ -221,3 +221,52 @@ i.icon.asterisk.loading {
   width: 120px;
   height: 120px;
 }
+
+/* Cookie Notice */
+
+.cookie-notice {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  padding: 15px;
+  z-index: 1000;
+  font-size: 14px;
+}
+
+.cookie-notice__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.cookie-notice__text {
+  margin: 0;
+}
+
+.cookie-notice__confirm-btn {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 25px;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.3s;
+}
+
+.cookie-notice__confirm-btn:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .cookie-notice__container {
+    flex-direction: column;
+    text-align: center;
+  }
+}
