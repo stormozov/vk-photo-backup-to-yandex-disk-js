@@ -141,55 +141,112 @@ class FileUploaderModal extends BaseModal {
   /**
    * Отправляет все изображения на Яндекс.Диск
    */
-  sendAllImages() {
+  async sendAllImages() {
     const containers = this.content.querySelectorAll('.image-preview-container');
-    containers.forEach((container) => this.sendImage(container));
+
+    const uploadPromises = [...containers].map((container) => this.#sendImage(container));
+
+    try {
+      await Promise.all(uploadPromises);
+    } catch (err) {
+      console.error('Ошибка при загрузке изображений:', err);
+      alert('Некоторые изображения не были загружены.');
+    }
   }
 
   /**
-   * Отправляет изображение на Яндекс.Диск
+   * Отправляет выбранное изображение на Яндекс.Диск
    * @param {HTMLElement} container - Контейнер изображения
    */
-  sendImage(container) {
+  async #sendImage(container) {
     const input = container.querySelector('input');
     const inputBlock = container.querySelector('.input');
     const path = input.value.trim();
 
-    // Проверка пути к файлу на Яндекс.Диске
-    if (!path) {
-      inputBlock.classList.add('error');
-      return;
-    }
+    if (!this.#validatePath(path, inputBlock)) return;
+    this.#toggleInputBlock(inputBlock, true);
 
-    // Блокировка поля
-    inputBlock.classList.add('disabled');
-
-    // Получение данных изображения
     const imageUrl = container.querySelector('img').src;
 
-    // Отправка на Яндекс.Диск
-    Yandex.uploadFile(path, imageUrl, (err, response) => {
-      if (err) {
-        console.error('Ошибка во время отправки фотографий на Яндекс.Диск из модального окна:', err);
-        inputBlock.classList.remove('disabled');
-      } else {
-        console.log(
-          new Date().toLocaleString(), 
-          '\nФотографии успешно отправлены на Яндекс.Диск из модального окна:\n', 
-          response
-        );
-        setTimeout(() => {
-          container.remove()
+    try {
+      const response = await this.#uploadFile(path, imageUrl);
+      this.#handleUploadSuccess(container, response);
+    } catch (err) {
+      this.#handleUploadError(err, inputBlock);
+    }
+  }
 
-          // Проверка оставшихся изображений
-          if (!this.content.querySelector('.image-preview-container')) {
-            this.close();
-            setTimeout(() => {
-              alert('Все изображения успешно отправлены на Яндекс.Диск.');
-            }, 100)
-          }
-        }, 1000);
-      }
+  /**
+   * Оборачивает вызов Yandex.uploadFile в промис.
+   * 
+   * @param {string} path - Путь к файлу.
+   * @param {string} imageUrl - URL изображения.
+   * 
+   * @returns {Promise} - Промис, который разрешается с ответом или отклоняется с ошибкой.
+   */
+  #uploadFile(path, imageUrl) {
+    return new Promise((resolve, reject) => {
+      Yandex.uploadFile(path, imageUrl, (err, response) => {
+        err ? reject(err) : resolve(response);
+      });
     });
+  }
+
+  /**
+ * Проверяет путь к файлу и добавляет класс ошибки, если путь некорректен.
+ * 
+ * @param {string} path - Путь к файлу.
+ * @param {HTMLElement} inputBlock - Элемент блока ввода.
+ * 
+ * @returns {boolean} - Возвращает true, если путь корректен, иначе false.
+ */
+  #validatePath(path, inputBlock) {
+    if (!path) {
+      inputBlock.classList.add('error');
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Включает или отключает блок ввода.
+   * @param {HTMLElement} inputBlock - Элемент блока ввода.
+   * @param {boolean} isDisabled - Флаг, указывающий, нужно ли отключить блок.
+   */
+  #toggleInputBlock(inputBlock, isDisabled) {
+    inputBlock.classList.toggle('disabled', isDisabled);
+  }
+
+  /**
+   * Обрабатывает ошибку загрузки.
+   * @param {Error} err - Ошибка загрузки.
+   * @param {HTMLElement} inputBlock - Элемент блока ввода.
+   */
+  #handleUploadError(err, inputBlock) {
+    console.error('Ошибка во время отправки фотографий на Яндекс.Диск из модального окна:', err);
+    this.#toggleInputBlock(inputBlock, false);
+  }
+
+  /**
+   * Обрабатывает успешную загрузку.
+   * @param {HTMLElement} container - Контейнер изображения.
+   * @param {Object} response - Ответ от сервера.
+   */
+  #handleUploadSuccess(container, response) {
+    console.log(
+      new Date().toLocaleString(),
+      '\nФотографии успешно отправлены на Яндекс.Диск из модального окна:\n',
+      response
+    );
+
+    container.remove();
+
+    // Проверка оставшихся изображений
+    if (!this.content.querySelector('.image-preview-container')) {
+      this.close();
+      setTimeout(() => {
+        alert('Все изображения успешно отправлены на Яндекс.Диске.');
+      });
+    }
   }
 }
