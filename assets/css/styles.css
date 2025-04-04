@@ -176,6 +176,15 @@ i.icon.asterisk.loading {
   background: none;
 }
 
+.uploaded-previewer-modal button.ui.button.delete-all {
+  display: none;
+  margin-right: 24px;
+}
+
+.uploaded-previewer-modal button.ui.button.delete-all > .icon {
+  background-color: transparent;
+}
+
 /* Всплывающее окно авторизации */
 
 .vk-auth-modal {

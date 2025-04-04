@@ -13,6 +13,7 @@ class PreviewModal extends BaseModal {
     this.element = element;
     this.closeButton = this.domElement.querySelector('.x.icon');
     this.content = this.domElement.querySelector('.content');
+    this.deleteButton = document.querySelector('button.ui.button.delete-all');
 
     this.registerEvents();
   }
@@ -26,7 +27,8 @@ class PreviewModal extends BaseModal {
    */
   registerEvents() {
     this.closeModalHandler();
-    this.deleteDownloadHandler()
+    this.deleteDownloadHandler();
+    this.deleteAllHandler();
   }
 
   /**
@@ -82,6 +84,8 @@ class PreviewModal extends BaseModal {
         setTimeout(() => {
           container.remove();
 
+          this.toggleDeleteAllButton(this.content.children.length);
+
           if (this.content.children.length === 0) {
             this.closeModal();
           }
@@ -108,6 +112,44 @@ class PreviewModal extends BaseModal {
   }
 
   /**
+   * Обработчик удаления всех загруженных на Яндекс.Диск изображений
+   */
+  deleteAllHandler() {
+    this.deleteButton.addEventListener('click', () => {
+      const confirmDelete = confirm('Вы действительно хотите удалить все выбранные фотографии?');
+      if (confirmDelete) {
+        const deletePromises = [...this.content.children].map((image) => {
+          const path = image.querySelector('.ui.button.delete').dataset.path;
+          return new Promise((resolve) => {
+            Yandex.removeFile(path, (error) => {
+              if (error) {
+                console.error(error);
+                resolve();
+              } else {
+                image.classList.add('deleted');
+                image.remove();
+                
+                console.log(
+                  new Date().toLocaleString(),
+                  '\nТип операции: DELETE',
+                  `\nВыбранная фотография (${path}) была успешно удалена с Яндекс.Диска`,
+                );
+                
+                resolve();
+              }
+            });
+          });
+        });
+
+        Promise.all(deletePromises).then(() => {
+          this.toggleDeleteAllButton(this.content.children.length);
+          if (this.content.children.length === 0) this.closeModal();
+        });
+      }
+    });
+  }
+
+  /**
    * Отрисовывает изображения в блоке всплывающего окна.
    * Если изображения отсутствуют, то отображается сообщение об этом.
    * 
@@ -116,15 +158,26 @@ class PreviewModal extends BaseModal {
   showImages(data) {
     console.log(data)
     setTimeout(() => {
-      if (data.length > 0) {
+      const dataLength = data.length;
+      if (dataLength > 0) {
         this.content.innerHTML = data
           .reverse()
           .map((image) => this.getImageInfo(image))
           .join('');
+        this.toggleDeleteAllButton(dataLength);
       } else {
         this.content.innerHTML = 'Загруженные фотографии отсутствуют';
+        this.toggleDeleteAllButton(0);
       }
     }, 500);
+  }
+
+  /**
+   * Управляет видимостью кнопки "Удалить все" в зависимости от количества изображений
+   * @param {number} count - Количество изображений
+   */
+  toggleDeleteAllButton(count) {
+      this.deleteButton.style.display = (count < 2) ? 'none' : 'inline-block';
   }
 
   /**
